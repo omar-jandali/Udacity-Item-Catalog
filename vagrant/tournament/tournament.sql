@@ -1,40 +1,18 @@
--- Table definitions for the tournament project.
---
--- Put your SQL 'create table' statements in this file; also 'create view'
--- statements if you choose to use it.
---
--- You can write comments in this file by starting them with two dashes, like
--- these lines here.
+-- The following is where the initial database will be created for the rest of the project
 
---------------------------------------------------------------------------------
+CREATE DATABASE Tournament
 
--- the following will clear all of the databases if they already exists
-drop database if exists tournament;
+-- The following is the table is where the name will be stored and associated with an id
 
--- the is the creation of the entire tournaments database
-create database tournament;
+CREATE TABLE Players(id SERIAL PRIMARY KEY,
+                      name TEXT)
 
--- the following are a list of tables that are going to be used in this project
+CREATE TABLE Records(id SERIAL REFERENCES Players(id),
+                      wins INTEGER,
+                      losses INTEGER)
 
--- this table will store all of the players in the tournament
-create table players(
-  id serial primary key,
-  name text
-);
-
-create table records(
-  id int references players(id),
-  wins int,
-  loses int
-)
-
-create table matches(
-  rotation serial primary key,
-  player_1 int references player(id),
-  player_2 int references player(id)
-)
-
-create view standings as
-  select players.id, records.wins, records.loses
-    from players and records
-    order by records.wins and players.id asc
+-- The following is the table is where the players wins and loses will be stored
+CREATE TABLE Matches(id SERIAL PRIMARY KEY,
+                      player_id INT SERIAL REFERENCES Players(id),
+                      winner INT SERIAL REFERENCES Players(id),
+                      loser INT SERIAL REFERENCES Players(id))

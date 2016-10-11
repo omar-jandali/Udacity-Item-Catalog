@@ -5,74 +5,93 @@
 
 import psycopg2
 
+#The following function is where the initial database connection will be made
 def connect():
-    """Connect to the PostgreSQL database.  Returns a database connection."""
-    connection = psycopg2.connect("dbname=tournament")
-    return connection
+    return psycopg2.connect("dbname=tournament")
 
+# the following function is where all of the
+#   connections will be made
+#   query will be executed
+#   changes will be commited
+#   and database connection will be closed
+def execute(query):
+    connection = connect()
+    cursor = connection.cursor()
+    cursor.execute(query)
+    results = cursor.fetchall()
+    cursor.commit()
+    connection.close
+
+    return results
+
+#the following function is used to set the default values for the players records at the beginning of the game_count
+def default_table():
+    execute("UPDATE Matches SET wins")
+
+#the following function will be used to delete all of the current matches
 def deleteMatches():
-    """Remove all the match records from the database."""
-    cursor = connect().cursor
-    cursor.execute("delete * from matches")
+    execute("UPDATE record SET wins=0, losses=0")
 
+    execute("DELETE FROM Matches")
+
+# the following function will be used to delete all of the players from the database
 def deletePlayers():
-    """Remove all the player records from the database."""
-    cursor = connect().cursor
-    cursor.execute("delete * from players")
+    execute("DELETE FROM players")
 
+# the following will count and return how many players are registered
 def countPlayers():
-    """Returns the number of players currently registered."""
+    execute("SELECT count(id) FROM Players")
 
-
+# the following function will be called when a new player is being registered for the
+#   tournament
+#
+#   Arguments = name as users name
 def registerPlayer(name):
-    """Adds a player to the tournament database.
+    execute("INSERT INTO Players VALUES ('%s')", (name,))
 
-    The database assigns a unique serial id number for the player.  (This
-    should be handled by your SQL database schema, not in your Python code.)
-
-    Args:
-      name: the player's full name (need not be unique).
-    """
-
-
+# the following fucntion will return a list of the players records in order of wins
+#
+# arguments:
+#   id: players id
+#   name: players name
+#   wins: players wins
+#   matches: the total number of matches for the player
 def playerStandings():
-    """Returns a list of the players and their win records, sorted by wins.
+    execute("""SELECT Players.id, Players.name, Records.wins, Matches.player_id, Matches.winner, Matches.loser
+            FROM Players LEFT JOIN records ON Players.id = Records.id
+                LEFT JOIN Matches ON Players.id = Matches.player_id
+            ORDER BY wins """)
 
-    The first entry in the list should be the player in first place, or a player
-    tied for first place if there is currently a tie.
-
-    Returns:
-      A list of tuples, each of which contains (id, name, wins, matches):
-        id: the player's unique id (assigned by the database)
-        name: the player's full name (as registered)
-        wins: the number of matches the player has won
-        matches: the number of matches the player has played
-    """
-
-
+# the following functino will save eatch matchs winer and looser between the two players
+#
+# argunments:
+#   winner: the player id that won
+#   loser: the player id that lost
 def reportMatch(winner, loser):
-    """Records the outcome of a single match between two players.
+    execute("INSERT INTO Matches (winners, losers) VALUES (%s, %s)", (winner,loser,))
+    execute("UPDATE Records SET wins += 1 WHERE id = %s", (winner,))
+    execute("UPDATE Records SET losses += 1 WHERE id = %s", (loser,))
 
-    Args:
-      winner:  the id number of the player who won
-      loser:  the id number of the player who lost
-    """
-
-
+# the following function is what will decide the pairing of the the two players of each match
+# in the tournament based on the swiss pairing Swiss-system
+#
+# arguments:
+#   first players id
+#   first players name
+#   second players id
+#   second players name
+#
+#   This function will go though the standing and match the top two players together, then move to the
+#   folowing two and match them. this will keep happening until all the players are matched
 def swissPairings():
-    """Returns a list of pairs of players for the next round of a match.
+    matchups = []
+    players = playerStandings()
+    matchups.append(
+            for i in range(0, len(players)):
+                if players[i] % 1 = 0:
+                    players[i][0]
+                elif players[i] % 1 = 1:
+                    players[i][1]
+        )
 
-    Assuming that there are an even number of players registered, each player
-    appears exactly once in the pairings.  Each player is paired with another
-    player with an equal or nearly-equal win record, that is, a player adjacent
-    to him or her in the standings.
-
-    Returns:
-      A list of tuples, each of which contains (id1, name1, id2, name2)
-        id1: the first player's unique id
-        name1: the first player's name
-        id2: the second player's unique id
-        name2: the second player's name
-    """
-
-
+    return matchups

@@ -6,8 +6,13 @@
 import psycopg2
 
 #The following function is where the initial database connection will be made
-def connect():
-    return psycopg2.connect("dbname=tournament")
+def connect(database_name="tournament"):
+    try:
+        connection = psycopg2.connect("dbname={}".format(database_name))
+        cursor = connection.cursor()
+        return connection, cursor
+    except:
+        print("<error message>")
 
 # the following function is where all of the
 #   connections will be made
@@ -15,8 +20,7 @@ def connect():
 #   changes will be commited
 #   and database connection will be closed
 def execute(query):
-    connection = connect()
-    cursor = connection.cursor()
+    connection, cursor = connect()
     cursor.execute(query)
     results = cursor.fetchall()
     cursor.commit()
@@ -30,8 +34,6 @@ def default_table():
 
 #the following function will be used to delete all of the current matches
 def deleteMatches():
-    execute("UPDATE record SET wins=0, losses=0")
-
     execute("DELETE FROM Matches")
 
 # the following function will be used to delete all of the players from the database
@@ -57,9 +59,9 @@ def registerPlayer(name):
 #   wins: players wins
 #   matches: the total number of matches for the player
 def playerStandings():
-    execute("""SELECT Players.id, Players.name, Records.wins, Matches.player_id, Matches.winner, Matches.loser
-            FROM Players LEFT JOIN records ON Players.id = Records.id
-                LEFT JOIN Matches ON Players.id = Matches.player_id
+    execute("""SELECT Players.id, Players.name, Records.wins, Matches
+            FROM Players LEFT JOIN Records ON Players.id = Records.id
+                LEFT JOIN Matches ON Players.id = Matches.id
             ORDER BY wins """)
 
 # the following functino will save eatch matchs winer and looser between the two players

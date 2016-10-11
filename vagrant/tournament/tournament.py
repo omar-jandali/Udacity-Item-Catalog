@@ -89,7 +89,7 @@ def swissPairings():
     matchups = []
     players = playerStandings()
     matchups.append(
-            for i in range(0, len(players)):
+            for i in range(0, len(players), 2):
                 if players[i] % 1 = 0:
                     players[i][0]
                 elif players[i] % 1 = 1:

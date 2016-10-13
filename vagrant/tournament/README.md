@@ -14,8 +14,11 @@ The best way to do so is to first download the following:
 
 5_once it has worked redirect to the tournament folder
 
-6_Once in the folder, type "python tournament-test.pyc"
+6_Once in the folder, type "python tournament-test.py" which will run and create the neccessary
+  database and tables that are needed for you to run the project.
 
-5_you will receive the http portal which will allow you to acces the local files
+7_ repeat step 6 and then you will be able to see that the project is running thorugh a port on your local machine
 
-6_in the browser, type localhost and the portal number that you earlier to run the code
+8_you will receive the http portal which will allow you to acces the local files
+
+9_in the browser, type localhost and the portal number that you earlier to run the code

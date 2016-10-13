@@ -86,14 +86,8 @@ def reportMatch(winner, loser):
 #   This function will go though the standing and match the top two players together, then move to the
 #   folowing two and match them. this will keep happening until all the players are matched
 def swissPairings():
-    matchups = []
-    players = playerStandings()
-    matchups.append(
-            for i in range(0, len(players), 2):
-                if players[i] % 1 = 0:
-                    players[i][0]
-                elif players[i] % 1 = 1:
-                    players[i][1]
-        )
-
-    return matchups
+    next_round = []
+    standings = playerStandings()
+    for i in range(0, len(standings), 2):
+        next_round.append((standings[i][0], standings[i][1], standings[i+1][0], standings[i+1][1]))
+    return next_round

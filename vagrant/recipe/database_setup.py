@@ -7,25 +7,31 @@ from sqlalchemy import create_engine
 Base = declarative_base()
 
 #the following creates a class that can be inhereted when called
-class Restaurant(Base):
+class Shelter(Base):
     # the first line simply call the tables name that is going to be defined - Restaurant
-    __tablename__ = "restaurant"
+    __tablename__ = "shelter"
 
     #the following lines of code will set the default names and descriptions of the all the columns
     #that are going to end up being created in table above
-    id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=True)
+    id = Column(Integer, primary_key = True)
+    name = Column(String(250), nullable = True)
+    address = Column(String(250))
+    city = Column(String(20))
+    state = Column(String(2))
+    zip = Column(Integer(5))
+    website = Column(String(250))
 
-class MenuItem(Base):
-    __tablename__ = "menu_item"
 
-    name = Column(String(80) nullable=False)
-    id = Column(Integer, primary_key=True)
-    description = Column(String(250))
-    price = Column(String(8))
-    course = Column(String(250))
-    restaurant_id = Column(Integer, ForeignKey('restaurant.id'))
-    restaurant = relationship(Restaurant)
+class Puppy(Base):
+    __tablename__ = "Puppy"
+
+    id = Column(Integer, primary_key = True)
+    name = Column(String(80), nullable = False)
+    dob = Column(Integer(8))
+    gender = Column(String(5))
+    weight = Column(Integer(4))
+    shelter_id = Column(Integer, ForeignKey('shelter.id'))
+    shelter = relationship(shelter)
 
 #AT THE END OF THE FILE
 engine = create_engine('sqlite:///restaurantment.db')

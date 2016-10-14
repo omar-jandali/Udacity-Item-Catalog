@@ -1,7 +1,7 @@
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import cgi
 
-# import CRUD Operations from Lesson 1 ##
+# import CRUD Operations from the database_setup page ##
 from database_setup import Base, Restaurant, MenuItem
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -17,11 +17,14 @@ class webServerHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         try:
-            # Objective 3 Step 2 - Create /restaurants/new page
+            # This is the page that will be used to create a new restaurant.
+
+            #the following is going to be where the page header is going to be created
             if self.path.endswith("/restaurants/new"):
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')
                 self.end_headers()
+                #the output variable is where all of the pages vidsual content is set through HTML
                 output = ""
                 output += "<html><body>"
                 output += "<h1>Make a New Restaurant</h1>"
@@ -29,16 +32,24 @@ class webServerHandler(BaseHTTPRequestHandler):
                 output += "<input name = 'newRestaurantName' type = 'text' placeholder = 'New Restaurant Name' > "
                 output += "<input type='submit' value='Create'>"
                 output += "</form></html></body>"
+                #the following is where the infomraitno is displayed to the user
                 self.wfile.write(output)
                 return
             if self.path.endswith("/edit"):
+                # the IDPath is how the items id is stored by looking the url and taking the second
+                # item in the path
                 restaurantIDPath = self.path.split("/")[2]
+                #this query will filter to the article that you want ot edit and save them to the id
+                #that was pulled from the query aboce
                 myRestaurantQuery = session.query(Restaurant).filter_by(
                     id=restaurantIDPath).one()
+                #then it is check to make sure that there was a restaurant that was pulled before it can
+                #be edited
                 if myRestaurantQuery:
                     self.send_response(200)
                     self.send_header('Content-type', 'text/html')
                     self.end_headers()
+                    #this is where the name edit occurs and will be saved into the database
                     output = "<html><body>"
                     output += "<h1>"
                     output += myRestaurantQuery.name
@@ -50,6 +61,8 @@ class webServerHandler(BaseHTTPRequestHandler):
                     output += "</body></html>"
 
                     self.wfile.write(output)
+            #the following statements do the same thing as the edit but instead of editing, it will
+            #redirect to a confirm the deletion of the a page
             if self.path.endswith("/delete"):
                 restaurantIDPath = self.path.split("/")[2]
 
@@ -68,6 +81,8 @@ class webServerHandler(BaseHTTPRequestHandler):
                     output += "</body></html>"
                     self.wfile.write(output)
 
+            #the following just displays all of the restaurant that are saved in the table to
+            #the user
             if self.path.endswith("/restaurants"):
                 restaurants = session.query(Restaurant).all()
                 output = ""

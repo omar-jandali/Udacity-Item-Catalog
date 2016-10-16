@@ -15,18 +15,30 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from setup_database import Base, Users, User_Auth, User_Info, User_Location
 
-# The following line is what initiates the flask app for this project
+#The following line is what initiates the flask app for this project
 app = Flask(__name__)
 
-#engine = create_engine('sqlite:///payup.db')
-#Base.metadata.bind = engine
+engine = create_engine('sqlite:///payup.db')
+Base.metadata.bind = engine
 
-#DBSession = sessionmaker(bind=engine)
-#session = DBSession()
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
+
+@app.route('/hello')
+def HelloWorld():
+    return 'Hello, World!'
 
 @app.route('/')
-def hello_world():
-    return 'Hello, World!'
+def WelcomePage():
+    return 'Welcome to the main page of Pau Up'
+
+@app.route('/newuser')
+def CreateNewUser():
+    return 'This page will be used to create new users'
+
+@app.route('/allusers')
+def ViewAllUsers():
+    return 'This page will be used to view all the users that are registered'
 
 if __name__ == '__main__':
     app.debug = True

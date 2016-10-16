@@ -34,7 +34,7 @@ def WelcomePage():
 
 @app.route('/newuser')
 def CreateNewUser():
-    return 'This page will be used to create new users'
+    return render_template('adduser.html')
 
 @app.route('/allusers')
 def ViewAllUsers():

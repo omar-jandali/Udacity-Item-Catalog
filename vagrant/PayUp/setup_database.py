@@ -10,7 +10,7 @@ This is the database setup page from PayUp which contains all of the following s
 #The following are all of the standard imports that are needed to run the database
 import os
 import sys
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, Index
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
@@ -18,15 +18,15 @@ from sqlalchemy import create_engine
 #The following is what will create the declarative_base base that will be imported to every tables
 Base = declarative_base()
 
-#The following
+#The following is the user table which will store the users id and username
 class Users(Base):
-    __table__ = 'users'
+    __tablename__ = 'users'
 
-    id = Colum(Integer, primary_key = True)
+    id = Column(Integer, primary_key = True)
     user_name = Column(String(16), nullable = False, unique = True, index = True)
 
 class User_Auth(Base):
-    __table__ = 'user_auth'
+    __tablename__ = 'user_auth'
 
     id = Column(Integer, primary_key = True)
     last_name = Column(String(16), nullable = False)
@@ -35,7 +35,7 @@ class User_Auth(Base):
 
 class User_Info(Base):
 
-    __table__ = 'user_info'
+    __tablename__ = 'user_info'
 
     id = Column(Integer, primary_key = True)
     email = Column(String(50), nullable = False, index = True, unique = True)
@@ -44,10 +44,15 @@ class User_Info(Base):
     gender = Column(String(2), nullable = True)
 
 class User_Location(Base):
-    __table__ = 'user_location'
+    __tablename__ = 'user_location'
 
     id = Column(Integer, primary_key = True)
-    street = Column(String(200), mullable = False)
+    street = Column(String(200), nullable = False)
     city = Column(String(35), nullable = False)
     state = Column(String(3), nullable = False)
     zip_code = Column(Integer(5), nullable = False, index = True)
+
+
+engine = create_engine('sqlite:///payup.db')
+
+Base.metadata.create_all(engine)

@@ -23,25 +23,47 @@ class Users(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key = True)
-    user_name = Column(String(16), nullable = False, unique = True, index = True)
+    username = Column(String(16), nullable = False, unique = True, index = True)
+
+class Tab_Event(Base):
+    __tablename__ = 'tab_event'
+
+    id = Column(Integer, primary_key = True)
+    description = Column(String(200))
+    amount = Column(String(10))#may be changed to a float or decimal value later on during development
+    user_id = Column(Integer(10), ForeignKey('user.id'))
+    users = relationship(Users)
+
+"""
+class Tab_Event(Base):
+    __tablename__ = 'tab_event'
+
+    id = Column(Integer, primary_key = True)
+    description = Column(String(200))
+    amount = Column(String(10))#may be changed to a float or decimal value later on during development
+    tab_id = Column(Integer(10), ForeignKey('tabs.id'))
+    tab = relationship(Tabs)
 
 class User_Auth(Base):
     __tablename__ = 'user_auth'
 
     id = Column(Integer, primary_key = True)
-    last_name = Column(String(16), nullable = False)
-    first_name = Column(String(16), nullable = False)
+    email = Column(String(50), nullable = False, index = True, unique = True)
     password = Column(String(225), nullable = False)
+    user_id = Column(Integer(10), ForeignKey('users.id'), nullable = False)
+    user = relationship(Users)
 
 class User_Info(Base):
-
     __tablename__ = 'user_info'
 
     id = Column(Integer, primary_key = True)
-    email = Column(String(50), nullable = False, index = True, unique = True)
+    last_name = Column(String(16), nullable = False)
+    first_name = Column(String(16), nullable = False)
+    company_name = Column(String(100))
     phone = Column(Integer(12), nullable = True, unique = True)
     age = Column(Integer(2), nullable = False)
-    gender = Column(String(2), nullable = True)
+    user_id = Column(Integer(10), ForeignKey('users.id'), nullable = False)
+    user = relationship(Users)
 
 class User_Location(Base):
     __tablename__ = 'user_location'
@@ -51,7 +73,18 @@ class User_Location(Base):
     city = Column(String(35), nullable = False)
     state = Column(String(3), nullable = False)
     zip_code = Column(Integer(5), nullable = False, index = True)
+    user_id = Column(Integer(10), ForeignKey('users.id'), nullable = False)
+    user = relationship(Users)
 
+class Tabs(Base):
+    __tablename__ = 'tabs'
+
+    id = Column(Integer, primary_key = True)
+    lender = Column(Integer(10), ForeignKey('users.id'), nullable = False)
+    borrower = Column(Integer(10), ForeignKey('users.id'), nullable = False)
+
+
+"""
 
 engine = create_engine('sqlite:///payup.db')
 

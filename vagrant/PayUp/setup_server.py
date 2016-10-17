@@ -24,21 +24,7 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-@app.route('/hello')
-def HelloWorld():
-    return 'Hello, World!'
-
-@app.route('/')
-def WelcomePage():
-    return 'Welcome to the main page of Pau Up'
-
-@app.route('/newuser')
-def CreateNewUser():
-    return render_template('adduser.html')
-
-@app.route('/allusers')
-def ViewAllUsers():
-    return 'This page will be used to view all the users that are registered'
+@
 
 if __name__ == '__main__':
     app.debug = True

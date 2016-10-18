@@ -10,7 +10,7 @@ This is the initial server and page directory for PayUp. Here is the list of dif
 
 #The following are all of the standard import for Flask as well as imports that allow the project
 #   to access database and use CRUD
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from setup_database import Base, Users, Tab_Event
@@ -41,27 +41,40 @@ def AddNewTab(user_id):
         newTab = Tab_Event(amount = request.form['amount'], description = request.form['description'], user_id = user_id)
         session.add(newTab)
         session.commit()
+        flash("a new tab was just added")
         return redirect(url_for('DisplayUsers', user_id = user_id))
     return render_template('createTab.html', user_id = user_id)
 
 @app.route('/edit/<int:user_id>/<int:tab_id>', methods = ['GET', 'POST'])
 def EditTabEvent(user_id, tab_id):
-    editTab = session.query(Tab_Event).filter_by(id = user_id).one()
+    editTab = session.query(Tab_Event).filter_by(id = tab_id).one()
     if request.method == 'POST':
-        if request.form['name']:
+        if request.form['amount']:
             editTab.name = request.form['amount']
+            session.add(editTab)
+            session.commit()
+            flash("a tab amount has been updated")
         if request.form['description']:
             editTab.description = request.form['description']
-        session.add(editTab)
-        session.commit()
+            session.add(editTab)
+            session.commit()
+            flash("a tab description has been updated")
         return redirect(url_for('DisplayUsers', user_id = user_id))
     else:
         return render_template('editTab.html', user_id = user_id, tab_id = tab_id, item = editTab)
-@app.route('/delete/<int:user_id>/<int:tab_id>')
-def DeleteTabEvent(user_id, tab_id):
-    return 'This is the delete page for tab'
 
+@app.route('/delete/<int:user_id>/<int:tab_id>', methods = ['GET', 'POST'])
+def DeleteTabEvent(user_id, tab_id):
+    deleteTab = session.query(Tab_Event).filter_by(id = tab_id).one()
+    if request.method == 'POST':
+        session.delete(deleteTab)
+        session.commit()
+        flash("a tab was just deleted")
+        return redirect(url_for('DisplayUsers', user_id = user_id))
+    else:
+        return render_template('deleteTab.html', user_id = user_id, item = deleteTab)
 
 if __name__ == '__main__':
+    app.secret_key = "Secret_Key"
     app.debug = True
     app.run(host = '0.0.0.0', port = 8080)

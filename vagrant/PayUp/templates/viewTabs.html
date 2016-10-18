@@ -6,8 +6,17 @@
 
     <a href="{{url_for('AddNewTab', user_id = user.id)}}">Create New Tab</a>
     <br>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+          {% for message in messages %}
+          <li><stron>{{message}}</stron></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
     <br>
-
+    <br>
     {% for i in items %}
       {{i.id}}.{{i.description}}
       <br>

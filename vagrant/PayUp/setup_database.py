@@ -31,7 +31,7 @@ class Tab_Event(Base):
     id = Column(Integer, primary_key = True)
     description = Column(String(200))
     amount = Column(String(10))#may be changed to a float or decimal value later on during development
-    user_id = Column(Integer(10), ForeignKey('user.id'))
+    user_id = Column(Integer(10), ForeignKey('users.id'))
     users = relationship(Users)
 
 """

@@ -2,7 +2,7 @@
   <body>
 
     <h1>This page is where new users are made</h1>
-    <form action="{{url_for('AddNewTab', user_id = user_id)}}" method="POST">
+    <form action="{{url_for('AddNewTab', user_id = user_id, tab_id = item.id)}}" method="POST">
       <table>
         <tr>
           <td>Username</td>
@@ -10,18 +10,18 @@
         </tr>
         <tr>
           <td>Amount</td>
-          <td><input type="text" name="amount", value=""></td>
+          <td><input type="text" name="amount", value="{{item.amount}}"></td>
         </tr>
         <tr>
           <td>Description</td>
-          <td><input type="text" name="description", value=""></td>
+          <td><input type="text" name="description", value="{{item.description}}"></td>
         </tr>
         <tr>
           <td><input type="Radio">Personal</td>
           <td><input type="Radio">Business</td>
         </tr>
         <tr>
-          <td><input type="submit" value="New Tab"></td>
+          <td><input type="submit" value="Edit Tab"></td>
         </tr>
       </table>
     </form>

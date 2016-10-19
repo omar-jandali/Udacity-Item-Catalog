@@ -28,4 +28,4 @@ def testingPage():
 if __name__ == '__main__':
     app.secret_key = "Secret_Key"
     app.debug = True
-    app.run(host = '0.0.0.0', port = 9090)
+    app.run(host = '0.0.0.0', port = 4040)

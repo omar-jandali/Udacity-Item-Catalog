@@ -1,0 +1,38 @@
+<html>
+  <head>
+
+  </head>
+  <body>
+    <h1>Create a new restaurant</h1>
+    <h2>Please fill out the entire form</h2>
+
+    <form action="{{url_for('CreateRestaurant')}}" method="POST">
+      <table>
+        <tr>
+          <td>Name</td>
+          <td><input type="text" name="name"></td>
+        </tr>
+        <tr>
+          <td>Food Type</td>
+          <td><input type="text" name="food_type"></td>
+        </tr>
+        <tr>
+          <td>Prices</td>
+          <td><input type="text" name="avg_price"></td>
+        </tr>
+        <tr>
+          <td>City</td>
+          <td><input type="text" name="city"></td>
+        </tr>
+        <tr>
+          <td>State</td>
+          <td><input type="text" name="state"></td>
+        </tr>
+        <tr>
+          <td><input type="submit" name="Submit"></td>
+        </tr>
+      </table>
+    </form>
+
+  </body>
+</html>

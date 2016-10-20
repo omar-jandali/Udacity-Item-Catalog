@@ -25,7 +25,29 @@ session = DBSession()
 def testingPage():
     return 'This is just a test page to get the server running'
 
+@app.route('/addrestaurant', methods=['GET', 'POST'])
+def CreateRestaurant():
+    if request.method == 'POST':
+        newRestaurant = Restaurants(name = request.form['name'])
+        session.add(newRestaurant)
+        session.commit()
+        newRestaurantInfo = Restaurants_Info(food_type = request.form['food_type'],
+                                             avg_price = request.form['avg_price'],
+                                             city = request.form['city'],
+                                             state = request.form['state'])
+        session.add(newRestaurantInfo)
+        session.commit
+        flash('%s was successfully created' % newRestaurant.name)
+        return redirect(url_for('DisplayRestaurant'))
+    else:
+        return render_template('addRestaurant.html')
+
+@app.route('/restaurants')
+def DisplayRestaurant():
+    restaurants = session.query(Restaurants).order_by(Restaurants.name)
+    return render_template('displayRestaurants.html', restaurants = restaurants)
+
 if __name__ == '__main__':
     app.secret_key = "Secret_Key"
     app.debug = True
-    app.run(host = '0.0.0.0', port = 4040)
+    app.run(host = '0.0.0.0', port = 8080)

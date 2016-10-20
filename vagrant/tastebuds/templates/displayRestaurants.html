@@ -1,0 +1,40 @@
+<html>
+  <head>
+
+  </head>
+  <body>
+    <h1>Here are all of the current restaurants available</h1>
+    <br>
+
+    {% with alerts = get_flashed_messages() %}
+      {% if alerts %}
+        <ul>
+          {% for alert in alerts %}
+          <li>
+            {{alert}}
+          </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <br>
+    <br>
+
+    <a href="{{url_for('CreateRestaurant.html')}}">Add a new restaurant</a>
+
+    <br>
+
+    {% for restaurant in restaurants %}
+      <p>Name: {{restaurant.name}}</p>
+      <br>
+      <p>Food Type: {{restaurant.food_type}}</p>
+      <br>
+      <p>Prices: {{restaurant.price}}</p>
+      <br>
+      <p>Location: {{restaurant.city}}, {{restaurant.state}}</p>
+      <br>
+    {% endfor %}
+
+  </body>
+</html>

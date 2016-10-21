@@ -53,6 +53,10 @@ class Dishes(Base):
 
     id = Column(Integer, primary_key = True)
     name = Column(String(100), nullable = True, unique = True, index = True)
+    price = Column(Integer(6), nullable = True)
+    description = Column(String(200), nullable = True)
+    restaurant_id = Column(Integer, ForeignKey('restaurants.id'))
+    restaurant = relationship(Restaurants)
 
 #The following table will store and track all of the dishes general information
 class Dishes_Info(Base):
@@ -60,8 +64,6 @@ class Dishes_Info(Base):
 
     id = Column(Integer, primary_key = True)
     course = Column(String(100), nullable = True)
-    price = Column(Integer(6), nullable = True)
-    description = Column(String(200), nullable = True)
     dishes_id = Column(Integer, ForeignKey('dishes.id'))
     dishes = relationship(Dishes)
 

@@ -40,22 +40,25 @@ def CreateRestaurant():
         session.commit()
         flash('%s was successfully created' % newRestaurant.name)
         return redirect(url_for('DisplayRestaurant'))
-    else:
-        return render_template('addRestaurant.html')
+    return render_template('addRestaurant.html')
 
-@app.route('/<int: restaurant_id>/edit', methods=['GET', 'POST'])
-def EditRestaurant(restaurant_id):
-    editRestaurant = session.query(Restaurants).filter_by(id = restaurant_id).one()
+@app.route('/<int:restaurant_id>/dishes')
+def DisplayDishes(restaurant_id):
+    restaurant = session.query(Restaurants).filter_by(id = restaurant_id).one()
+    dishes = session.query(Dishes).filter_by(restaurant_id = restaurant.id)
+    return render_template('displayDishes.html', restaurant = restaurant, dishes = dishes)
+
+@app.route('/<int:restaurant_id>/addDish', methods = ['GET', 'POST'])
+def CreateDish(restaurant_id):
     if request.method == 'POST':
-        editedRestaurant.name = request.form['name']
-        editedRestaurant.city = request.form['city']
-        editedRestaurant.state = request.form['state']
-        session.add(editedRestaurant)
+        newDish = Dishes(name = request.form['name'],
+                         price = request.form['price'],
+                         description = request.form['description'],
+                         restaurant_id = restaurant_id)
+        session.add(newDish)
         session.commit()
-        return redirect(url_for('DisplayRestaurant'))
-    else:
-        return render_template('editRestaurant.html',
-                                restaurant = editedRestaurant)
+        return redirect(url_for('DisplayDishes', restaurant_id = restaurant_id))
+    return render_template('addDishes.html', restaurant_id = restaurant_id)
 
 if __name__ == '__main__':
     app.secret_key = "Secret_Key"

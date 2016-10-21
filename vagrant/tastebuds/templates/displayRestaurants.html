@@ -30,7 +30,7 @@
       <br>
       {{restaurant.city}}, {{restaurant.state}}
       <br>
-      <a href="{{url_for('EditRestaurant', restuarant_id = restaurant.id)}}">Edit</a>
+      <a href="{{url_for('DisplayDishes', restaurant_id = restaurant.id)}}">View Dishes</a>
       <br>
       <br>
     {% endfor %}

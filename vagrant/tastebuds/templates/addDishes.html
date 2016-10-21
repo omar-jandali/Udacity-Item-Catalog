@@ -1,0 +1,30 @@
+<html>
+  <head>
+
+  </head>
+  <body>
+    <h1>Create a new dish</h1>
+    <h2>Please fill out the entire form</h2>
+
+    <form action="{{url_for('CreateDish', restaurant_id = restaurant_id)}}" method="POST">
+      <table>
+        <tr>
+          <td>Name</td>
+          <td><input type="text" name="name"></td>
+        </tr>
+        <tr>
+          <td>Price</td>
+          <td><input type="text" name="price"></td>
+        </tr>
+        <tr>
+          <td>Description</td>
+          <td><input type="text" name="description"></td>
+        </tr>
+        <tr>
+          <td><input type="submit" name="Submit"></td>
+        </tr>
+      </table>
+    </form>
+
+  </body>
+</html>

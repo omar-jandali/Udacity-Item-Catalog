@@ -25,27 +25,37 @@ session = DBSession()
 def testingPage():
     return 'This is just a test page to get the server running'
 
+@app.route('/home')
+def DisplayRestaurant():
+    restaurants = session.query(Restaurants).order_by(Restaurants.id)
+    return render_template('displayRestaurants.html', restaurants = restaurants)
+
 @app.route('/addrestaurant', methods=['GET', 'POST'])
 def CreateRestaurant():
     if request.method == 'POST':
-        newRestaurant = Restaurants(name = request.form['name'])
+        newRestaurant = Restaurants(name = request.form['name'],
+                                    city = request.form['city'],
+                                    state = request.form['state'])
         session.add(newRestaurant)
         session.commit()
-        newRestaurantInfo = Restaurants_Info(food_type = request.form['food_type'],
-                                             avg_price = request.form['avg_price'],
-                                             city = request.form['city'],
-                                             state = request.form['state'])
-        session.add(newRestaurantInfo)
-        session.commit
         flash('%s was successfully created' % newRestaurant.name)
         return redirect(url_for('DisplayRestaurant'))
     else:
         return render_template('addRestaurant.html')
 
-@app.route('/restaurants')
-def DisplayRestaurant():
-    restaurants = session.query(Restaurants).order_by(Restaurants.name)
-    return render_template('displayRestaurants.html', restaurants = restaurants)
+@app.route('/<int: restaurant_id>/edit', methods=['GET', 'POST'])
+def EditRestaurant(restaurant_id):
+    editRestaurant = session.query(Restaurants).filter_by(id = restaurant_id).one()
+    if request.method == 'POST':
+        editedRestaurant.name = request.form['name']
+        editedRestaurant.city = request.form['city']
+        editedRestaurant.state = request.form['state']
+        session.add(editedRestaurant)
+        session.commit()
+        return redirect(url_for('DisplayRestaurant'))
+    else:
+        return render_template('editRestaurant.html',
+                                restaurant = editedRestaurant)
 
 if __name__ == '__main__':
     app.secret_key = "Secret_Key"

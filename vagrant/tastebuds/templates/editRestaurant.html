@@ -6,19 +6,19 @@
     <h1>Create a new restaurant</h1>
     <h2>Please fill out the entire form</h2>
 
-    <form action="{{url_for('CreateRestaurant')}}" method="POST">
+    <form action="{{url_for('EditRestaurant', restaurant_id = restaurant.id)}}" method="POST">
       <table>
         <tr>
           <td>Name</td>
-          <td><input type="text" name="name"></td>
+          <td><input type="text" name="name" value="{{restaurant.name}}"></td>
         </tr>
         <tr>
           <td>City</td>
-          <td><input type="text" name="city"></td>
+          <td><input type="text" name="city" value="{{restaurant.city}}"></td>
         </tr>
         <tr>
           <td>State</td>
-          <td><input type="text" name="state"></td>
+          <td><input type="text" name="state" value="{{restaurant.state}}"></td>
         </tr>
         <tr>
           <td><input type="submit" name="Submit"></td>

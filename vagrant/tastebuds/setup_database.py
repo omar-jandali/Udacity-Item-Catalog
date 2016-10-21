@@ -21,6 +21,8 @@ class Restaurants(Base):
 
     id = Column(Integer, primary_key = True)
     name = Column(String(100), nullable = False, unique = True, index = True)
+    city = Column(String(100), nullable = False, index = True)
+    state = Column(String(3), nullable = False)
 
 # the following class will store all of the restaurants general informaiton
 class Restaurants_Info(Base):
@@ -29,8 +31,6 @@ class Restaurants_Info(Base):
     id = Column(Integer, primary_key = True)
     food_type = Column(String(100), nullable = False)
     avg_price = Column(Integer(5), nullable = False)
-    city = Column(String(100), nullable = False, index = True)
-    state = Column(String(3), nullable = False)
     restaurants_id = Column(Integer(100), ForeignKey('restaurants.id'))
     restaurants = relationship(Restaurants)
 

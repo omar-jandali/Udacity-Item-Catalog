@@ -26,14 +26,51 @@
     <br>
 
     {% for restaurant in restaurants %}
+
+      <table>
+        <tr>
+          <td>
+            {{restaurant.name}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a href="{{url_for('ViewRestaurant', restaurant_id = restaurant.id)}}">View</a>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a href="{{url_for('DisplayDishes', restaurant_id = restaurant.id)}}">Dishes</a>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a href="{{url_for('DeleteRestaurant', restaurant_id = restaurant.id)}}">Delete</a>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a href="{{url_for('EditRestaurant', restaurant_id = restaurant.id)}}">Edit</a>
+          </td>
+        </tr>
+      </table>
+      <br>
+      <br>
+
+    {% endfor %}
+
+    <!--{% for restaurant in restaurants %}
       {{restaurant.name}}
       <br>
       {{restaurant.city}}, {{restaurant.state}}
       <br>
       <a href="{{url_for('DisplayDishes', restaurant_id = restaurant.id)}}">View Dishes</a>
       <br>
+      <a href="{{url_for('DeleteRestaurant', restaurant_id = restaurant.id)}}">Delete</a>
+      <a href="{{url_for('EditRestaurant', restaurant_id = restaurant.id)}}">Edit</a>
       <br>
-    {% endfor %}
+      <br>
+    {% endfor %}-->
 
   </body>
 </html>

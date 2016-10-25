@@ -3,7 +3,7 @@
 
   </head>
   <body>
-    <h1>Create a new restaurant</h1>
+    <h1>Edit Restaurant Information</h1>
     <h2>Please fill out the entire form</h2>
 
     <form action="{{url_for('EditRestaurant', restaurant_id = restaurant.id)}}" method="POST">
@@ -21,7 +21,7 @@
           <td><input type="text" name="state" value="{{restaurant.state}}"></td>
         </tr>
         <tr>
-          <td><input type="submit" name="Submit"></td>
+          <td><input type="submit" name="Edit"></td>
         </tr>
       </table>
     </form>

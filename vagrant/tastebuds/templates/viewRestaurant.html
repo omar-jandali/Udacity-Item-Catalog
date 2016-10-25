@@ -1,0 +1,81 @@
+<html>
+  <head>
+
+  </head>
+  <body>
+    <h1>Here are all of the current restaurants available</h1>
+
+    {% with alerts = get_flashed_messages() %}
+    {% if alerts %}
+    <ul>
+      {% for alert in alerts %}
+      <li>
+        {{alert}}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+    <br>
+    <table>
+      <tr>
+        <td>
+          {{restaurant.name}}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {{restaurant.city}},
+        </td>
+        <td>
+          {{restaurant.state}}
+        </td>
+      </tr>
+      <td>
+          <a href="{{url_for('RateRestaurant', restaurant_id = restaurant.id)}}">Rate</a>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a href="{{url_for('EditRestaurant', restaurant_id = restaurant.id)}}">Edit</a>
+        </td>
+      </tr>
+      <tr>
+      <tr>
+        <td>
+          <a href="{{url_for('DisplayDishes', restaurant_id = restaurant.id)}}">Dishes</a>
+        </td>
+      </tr>
+    </table>
+    <br>
+    <br>
+    {% for rate in rating %}
+      <table>
+        <tr>
+          <td>Food Rating</td>
+          <td>{{rate.food_rating}}</td>
+        </tr>
+        <tr>
+          <td>Service Rating</td>
+          <td>{{rate.service_rating}}</td>
+        </tr>
+        <tr>
+          <td>Pricing Rating</td>
+          <td>{{rate.pricing_rating}}</td>
+        </tr>
+        <tr>
+          <td>Location Rating</td>
+          <td>{{rate.location_rating}}</td>
+        </tr>
+        <tr>
+          <td>Access Rating</td>
+          <td>{{rate.access_rating}}</td>
+        </tr>
+      </table>
+      <br>
+    {% endfor %}
+    <br>
+      <a href="{{url_for('DisplayRestaurant')}}">Return to restaurants</a>
+    <br>
+  </body>
+</html>

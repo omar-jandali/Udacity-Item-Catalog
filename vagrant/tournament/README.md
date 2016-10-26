@@ -13,8 +13,9 @@ The best way to do so is to first download the following:
 4_once that is complete simply type "vagrant ssh" which will activate the virtual machine server
 
 5_once it has worked redirect to the tournament folder
+    [cd /vagrant/tournament]
 
-6_Once in the folder, type "python tournament-test.py" which will run and create the neccessary
+6_Once in the folder, type "psql -f tosurnament.sql" and hit enter, followed by"python tournament-test.py" which will run and create the neccessary
   database and tables that are needed for you to run the project.
 
 7_ repeat step 6 and then you will be able to see that the project is running thorugh a port on your local machine

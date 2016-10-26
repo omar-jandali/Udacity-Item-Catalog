@@ -1,8 +1,3 @@
-#!/usr/bin/env python
-#
-# tournament.py -- implementation of a Swiss-system tournament
-#
-
 import psycopg2
 
 #The following function is where the initial database connection will be made
@@ -23,10 +18,17 @@ def execute(query):
     connection, cursor = connect()
     cursor.execute(query)
     results = cursor.fetchall()
-    cursor.commit()
+    connection.commit()
     connection.close
-
     return results
+
+#this functions will be used for deleting records, when deleting records,
+#   there are no results that are passed
+def execute_delete(query):
+    connection, cursor = connect()
+    cursor.execute(query)
+    connection.commit()
+    connection.close
 
 #the following function is used to set the default values for the players records at the beginning of the game_count
 def default_table():
@@ -38,7 +40,7 @@ def deleteMatches():
 
 # the following function will be used to delete all of the players from the database
 def deletePlayers():
-    execute("DELETE FROM players")
+    execute_delete("DELETE FROM players RETURNING *")
 
 # the following will count and return how many players are registered
 def countPlayers():
@@ -70,11 +72,13 @@ def playerStandings():
 #   winner: the player id that won
 #   loser: the player id that lost
 def reportMatch(winner, loser):
-    execute("INSERT INTO Matches (winners, losers) VALUES (%s, %s)", (winner,loser,))
+    execute("INSERT INTO Matches (winners, losers) VALUES (%s, %s)", (winner,
+                                                                      loser,))
     execute("UPDATE Records SET wins += 1 WHERE id = %s", (winner,))
     execute("UPDATE Records SET losses += 1 WHERE id = %s", (loser,))
 
-# the following function is what will decide the pairing of the the two players of each match
+# the following function is what will decide the pairing of the the two players
+#   of each match
 # in the tournament based on the swiss pairing Swiss-system
 #
 # arguments:
@@ -83,11 +87,16 @@ def reportMatch(winner, loser):
 #   second players id
 #   second players name
 #
-#   This function will go though the standing and match the top two players together, then move to the
-#   folowing two and match them. this will keep happening until all the players are matched
+#   This function will go though the standing and match the top two players
+#    together, then move to the
+#   folowing two and match them. this will keep happening until all the
+#    players are matched
 def swissPairings():
     next_round = []
     standings = playerStandings()
     for i in range(0, len(standings), 2):
-        next_round.append((standings[i][0], standings[i][1], standings[i+1][0], standings[i+1][1]))
+        next_round.append((standings[i][0],
+                            standings[i][1],
+                            standings[i+1][0],
+                            standings[i+1][1]))
     return next_round

@@ -36,7 +36,7 @@ def default_table():
 
 #the following function will be used to delete all of the current matches
 def deleteMatches():
-    execute("DELETE FROM Matches")
+    execute_delete("DELETE FROM Matches")
 
 # the following function will be used to delete all of the players from the database
 def deletePlayers():

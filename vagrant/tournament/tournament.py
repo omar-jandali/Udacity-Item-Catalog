@@ -3,7 +3,7 @@ import psycopg2
 #The following function is where the initial database connection will be made
 def connect(database_name="tournament"):
     try:
-        connection = psycopg2.connect("dbname={}".format(database_name))
+        connection = psycopg2.connect("dbname={database_name}")
         cursor = connection.cursor()
         return connection, cursor
     except:
@@ -15,7 +15,8 @@ def connect(database_name="tournament"):
 #   changes will be commited
 #   and database connection will be closed
 def execute(query):
-    connection, cursor = connect()
+    connection = connect()
+    cursor = connect()
     cursor.execute(query)
     results = cursor.fetchall()
     connection.commit()
@@ -25,10 +26,21 @@ def execute(query):
 #this functions will be used for deleting records, when deleting records,
 #   there are no results that are passed
 def execute_delete(query):
-    connection, cursor = connect()
+    connection = connect()
+    cursor = connect()
     cursor.execute(query)
     connection.commit()
-    connection.close
+    connection.close()
+
+def execute_default(query):
+    connection = connect()
+    cursor = connect()
+    cursor.execute(query)
+    results = cursor.fetchone()[0]
+    connection.commit()
+    connection.close()
+    return results
+
 
 #the following function is used to set the default values for the players records at the beginning of the game_count
 def default_table():
@@ -36,7 +48,7 @@ def default_table():
 
 #the following function will be used to delete all of the current matches
 def deleteMatches():
-    execute_delete("DELETE FROM Matches")
+    execute_delete("DELETE FROM Matches Returning *")
 
 # the following function will be used to delete all of the players from the database
 def deletePlayers():
@@ -44,14 +56,14 @@ def deletePlayers():
 
 # the following will count and return how many players are registered
 def countPlayers():
-    execute("SELECT count(id) FROM Players")
+    execute_default("SELECT count(*) FROM Players")
 
 # the following function will be called when a new player is being registered for the
 #   tournament
 #
 #   Arguments = name as users name
 def registerPlayer(name):
-    execute("INSERT INTO Players VALUES ('%s')", (name,))
+    execute_default("INSERT INTO Players VALUES ('%s')", (name,))
 
 # the following fucntion will return a list of the players records in order of wins
 #

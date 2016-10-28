@@ -1,7 +1,7 @@
 -- The following is where the initial database will be created for the rest of the project
 
 DROP DATABASE IF EXISTS tournament;
-CREATE DATABASE Tournament;
+CREATE DATABASE tournament;
 \c tournament
 
 -- The following is the table is where the name will be stored and associated with an id

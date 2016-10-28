@@ -1,48 +1,46 @@
 import psycopg2
 
 #The following function is where the initial database connection will be made
-def connect(database_name="tournament"):
-    try:
-        connection = psycopg2.connect("dbname={database_name}")
-        cursor = connection.cursor()
-        return connection, cursor
-    except:
-        print("<error message>")
+def connect():
+    return psycopg2.connect("dbname=tournament")
 
 #the following function is used to set the default values for the players records at the beginning of the game_count
 def default_table():
     query = "UPDATE Matches SET wins"
 
-    connection, cursor = connect()
+    connection = connect()
+    cursor = connection.cursor()
     cursor.execute(query)
     results = cursor.fetchall()
     connection.commit()
-    connection.close
+    connection.close()
     return results
 
 #the following function will be used to delete all of the current matches
 def deleteMatches():
-    query = "DELETE FROM Matches Returning *"
-    connection, cursor = connect()
+    query = "DELETE from Matches"
+    connection = connect()
+    cursor = connection.cursor()
     cursor.execute(query)
     connection.commit()
     connection.close()
 
 # the following function will be used to delete all of the players from the database
 def deletePlayers():
-    query = "DELETE FROM players RETURNING *"
-    connection, cursor = connect()
+    query = "DELETE from Players WHERE id NOTNULL"
+    connection = connect()
+    cursor = connection.cursor()
     cursor.execute(query)
     connection.commit()
     connection.close()
 
 # the following will count and return how many players are registered
 def countPlayers():
-    query = "SELECT count(*) FROM Players"
-    connection, cursor = connect()
+    query = "SELECT count(participants) as num FROM Players"
+    connection = connect()
+    cursor = connection.cursor()
     cursor.execute(query)
-    results = cursor.fetchone()[0]
-    connection.commit()
+    results = int(cursor.fetchone()[0])
     connection.close()
     return results
 
@@ -51,13 +49,13 @@ def countPlayers():
 #
 #   Arguments = name as users name
 def registerPlayer(name):
-    query = "INSERT INTO Players VALUES ('%s')", (name,)
-    connection, cursor = connect()
+    query = "INSERT INTO Players (name) VALUES (%s)", (name,)
+    connection = connect()
+    cursor = connection.cursor()
     cursor.execute(query)
     results = cursor.fetchone()[0]
     connection.commit()
     connection.close()
-    return results
 
 # the following fucntion will return a list of the players records in order of wins
 #
@@ -67,16 +65,17 @@ def registerPlayer(name):
 #   wins: players wins
 #   matches: the total number of matches for the player
 def playerStandings():
-    query = "SELECT Players.id, Players.name, Records.wins, Matches " +
-            "FROM Players LEFT JOIN Records ON Players.id = Records.id " +
-            "LEFT JOIN Matches ON Players.id = Matches.id " +
-            "ORDER BY wins"
-    connection, cursor = connect()
+    query = """SELECT Players.id, Players.name, Records.wins, Matches
+            FROM Players LEFT JOIN Records ON Players.id = Records.id
+            LEFT JOIN Matches ON Players.id = Matches.id
+            ORDER BY wins"""
+    connection = connect()
+    cursor = connection.cursor()
     cursor.execute(query)
-    results = cursor.fetchall()
+    standing = cursor.fetchall()
     connection.commit()
-    connection.close
-    return results
+    connection.close()
+    return standing
 # the following functino will save eatch matchs winer and looser between the two players
 #
 # argunments:
@@ -84,20 +83,19 @@ def playerStandings():
 #   loser: the player id that lost
 def reportMatch(winner, loser):
     query = "INSERT INTO Matches (winners, losers) VALUES (%s, %s)", (winner, loser,)
-    connection, cursor = connect()
+    connection = connect()
+    cursor = connection.cursor()
     cursor.execute(query)
+    query2 = "UPDATE Records SET wins += 1 WHERE id = %s", (winner,)
+    connection = connect()
+    cursor = connection.cursor()
+    cursor.execute(query2)
+    query3 = "UPDATE Records SET losses += 1 WHERE id = %s", (loser,)
+    connection = connect()
+    cursor = connection.cursor()
+    cursor.execute(query3)
     connection.commit()
-    connection.close
-    execute("UPDATE Records SET wins += 1 WHERE id = %s", (winner,))
-    connection, cursor = connect()
-    cursor.execute(query)
-    connection.commit()
-    connection.close
-    execute("UPDATE Records SET losses += 1 WHERE id = %s", (loser,))
-    connection, cursor = connect()
-    cursor.execute(query)
-    connection.commit()
-    connection.close
+    connection.close()
 
 # the following function is what will decide the pairing of the the two players
 #   of each match

@@ -37,7 +37,7 @@ def deletePlayers():
 
 # the following will count and return how many players are registered
 def countPlayers():
-    query = "SELECT count(participants) as num FROM Players"
+    query = "SELECT count(id) as num FROM Players"
     connection = connect()
     cursor = connection.cursor()
     cursor.execute(query)
@@ -50,11 +50,10 @@ def countPlayers():
 #
 #   Arguments = name as users name
 def registerPlayer(name):
-    query = "INSERT INTO Players (name) VALUES (%s)", (name,)
+    query = "INSERT INTO Players (name) VALUES (%s)"
     connection = connect()
     cursor = connection.cursor()
-    cursor.execute(query)
-    results = cursor.fetchone()[0]
+    cursor.execute(query, (name,))
     connection.commit()
     connection.close()
 
@@ -67,8 +66,7 @@ def registerPlayer(name):
 #   matches: the total number of matches for the player
 def playerStandings():
     query = """SELECT Players.id, Players.name, Records.wins, Matches
-            FROM Players LEFT JOIN Records ON Players.id = Records.id
-            LEFT JOIN Matches ON Players.id = Matches.id
+            FROM Players LEFT JOIN Matches ON Players.id = Matches.id
             ORDER BY wins"""
     connection = connect()
     cursor = connection.cursor()
@@ -83,18 +81,18 @@ def playerStandings():
 #   winner: the player id that won
 #   loser: the player id that lost
 def reportMatch(winner, loser):
-    query = "INSERT INTO Matches (winners, losers) VALUES (%s, %s)", (winner, loser,)
+    query = "INSERT INTO Matches (winners, losers) VALUES (%s, %s)"
     connection = connect()
     cursor = connection.cursor()
-    cursor.execute(query)
-    query2 = "UPDATE Records SET wins += 1 WHERE id = %s", (winner,)
+    cursor.execute(query, (winner, loser,))
+    query2 = "UPDATE Records SET wins += 1 WHERE id = %s"
     connection = connect()
     cursor = connection.cursor()
-    cursor.execute(query2)
-    query3 = "UPDATE Records SET losses += 1 WHERE id = %s", (loser,)
+    cursor.execute(query2, (winner,))
+    query3 = "UPDATE Records SET losses += 1 WHERE id = %s"
     connection = connect()
     cursor = connection.cursor()
-    cursor.execute(query3)
+    cursor.execute(query3, (loser,))
     connection.commit()
     connection.close()
 

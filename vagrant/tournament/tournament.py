@@ -1,8 +1,9 @@
 import psycopg2
 
 #The following function is where the initial database connection will be made
-def connect():
-    return psycopg2.connect("dbname=tournament")
+def connect(database_name="tournament"):
+    connection = psycopg2.connect("dbname={}".format(database_name))
+    return connection
 
 #the following function is used to set the default values for the players records at the beginning of the game_count
 def default_table():

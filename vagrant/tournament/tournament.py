@@ -28,7 +28,7 @@ def deleteMatches():
 
 # the following function will be used to delete all of the players from the database
 def deletePlayers():
-    query = "DELETE from Players WHERE id NOTNULL"
+    query = "DELETE from Players"
     connection = connect()
     cursor = connection.cursor()
     cursor.execute(query)
@@ -65,9 +65,11 @@ def registerPlayer(name):
 #   wins: players wins
 #   matches: the total number of matches for the player
 def playerStandings():
-    query = """SELECT Players.id, Players.name, Matches
-            FROM Players LEFT JOIN Matches ON Players.id = Matches.id
-            ORDER BY winner"""
+    query = """SELECT Players.id, Players.name, Players.wins, Matches
+               FROM (SELECT Players.id, COALESCE(Players.wins, 0) + COALESCE(Players.wins, 0) as matches
+               FROM Players GROUP BY Players.id, Players.wins, Players.losses) as sub
+               JOIN Players ON (Players.id = sub.id)
+               ORDER BY wins"""
     connection = connect()
     cursor = connection.cursor()
     cursor.execute(query)
@@ -81,15 +83,15 @@ def playerStandings():
 #   winner: the player id that won
 #   loser: the player id that lost
 def reportMatch(winner, loser):
-    query = "INSERT INTO Matches (winners, losers) VALUES (%s, %s)"
+    query = "INSERT INTO Matches (winner, loser) VALUES (%s, %s)"
     connection = connect()
     cursor = connection.cursor()
     cursor.execute(query, (winner, loser,))
-    query2 = "UPDATE Matches SET wins += 1 WHERE id = %s"
+    query2 = "UPDATE Players SET wins = wins + 1 WHERE id = %s"
     connection = connect()
     cursor = connection.cursor()
     cursor.execute(query2, (winner,))
-    query3 = "UPDATE Matches SET losses += 1 WHERE id = %s"
+    query3 = "UPDATE Players SET losses = losses + 1 WHERE id = %s"
     connection = connect()
     cursor = connection.cursor()
     cursor.execute(query3, (loser,))

@@ -7,7 +7,9 @@ CREATE DATABASE tournament;
 -- The following is the table is where the name will be stored and associated with an id
 
 CREATE TABLE Players(id SERIAL PRIMARY KEY,
-                      name TEXT);
+                      name TEXT,
+                      wins INTEGER DEFAULT 0,
+                      losses INTEGER DEFAULT 0);
 
 -- The following is the table is where the players wins and loses will be stored
 CREATE TABLE Matches(id SERIAL PRIMARY KEY,

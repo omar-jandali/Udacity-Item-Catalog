@@ -65,9 +65,9 @@ def registerPlayer(name):
 #   wins: players wins
 #   matches: the total number of matches for the player
 def playerStandings():
-    query = """SELECT Players.id, Players.name, Records.wins, Matches
+    query = """SELECT Players.id, Players.name, Matches
             FROM Players LEFT JOIN Matches ON Players.id = Matches.id
-            ORDER BY wins"""
+            ORDER BY winner"""
     connection = connect()
     cursor = connection.cursor()
     cursor.execute(query)
@@ -85,11 +85,11 @@ def reportMatch(winner, loser):
     connection = connect()
     cursor = connection.cursor()
     cursor.execute(query, (winner, loser,))
-    query2 = "UPDATE Records SET wins += 1 WHERE id = %s"
+    query2 = "UPDATE Matches SET wins += 1 WHERE id = %s"
     connection = connect()
     cursor = connection.cursor()
     cursor.execute(query2, (winner,))
-    query3 = "UPDATE Records SET losses += 1 WHERE id = %s"
+    query3 = "UPDATE Matches SET losses += 1 WHERE id = %s"
     connection = connect()
     cursor = connection.cursor()
     cursor.execute(query3, (loser,))

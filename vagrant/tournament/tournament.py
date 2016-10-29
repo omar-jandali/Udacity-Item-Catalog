@@ -5,18 +5,6 @@ def connect(database_name="tournament"):
     connection = psycopg2.connect("dbname={}".format(database_name))
     return connection
 
-#the following function is used to set the default values for the players records at the beginning of the game_count
-def default_table():
-    query = "UPDATE Matches SET wins"
-
-    connection = connect()
-    cursor = connection.cursor()
-    cursor.execute(query)
-    results = cursor.fetchall()
-    connection.commit()
-    connection.close()
-    return results
-
 #the following function will be used to delete all of the current matches
 def deleteMatches():
     query = "DELETE from Matches"
@@ -65,11 +53,13 @@ def registerPlayer(name):
 #   wins: players wins
 #   matches: the total number of matches for the player
 def playerStandings():
-    query = """SELECT Players.id, Players.name, Players.wins, Matches
-               FROM (SELECT Players.id, COALESCE(Players.wins, 0) + COALESCE(Players.wins, 0) as matches
-               FROM Players GROUP BY Players.id, Players.wins, Players.losses) as sub
-               JOIN Players ON (Players.id = sub.id)
-               ORDER BY wins"""
+    query = """SELECT Players.id, Players.name,
+            (SELECT count(Matches.winner) FROM Matches
+            WHERE Players.id = Matches.winner) as wins,
+            (SELECT count(Matches.id) FROM Matches
+            WHERE Players.id = Matches.winner
+            or Players.id = Matches.loser) as matches
+            FROM Players ORDER BY wins DESC, matches DESC"""
     connection = connect()
     cursor = connection.cursor()
     cursor.execute(query)
@@ -87,14 +77,6 @@ def reportMatch(winner, loser):
     connection = connect()
     cursor = connection.cursor()
     cursor.execute(query, (winner, loser,))
-    query2 = "UPDATE Players SET wins = wins + 1 WHERE id = %s"
-    connection = connect()
-    cursor = connection.cursor()
-    cursor.execute(query2, (winner,))
-    query3 = "UPDATE Players SET losses = losses + 1 WHERE id = %s"
-    connection = connect()
-    cursor = connection.cursor()
-    cursor.execute(query3, (loser,))
     connection.commit()
     connection.close()
 

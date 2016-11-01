@@ -38,13 +38,11 @@ class Restaurants_Info(Base):
 class Restaurants_Rating(Base):
     __tablename__ = 'restaurants_rating'
 
-    id = Column(Integer, primary_key = True)
-    restaurants_rating = Column(String(100), nullable = True)
-    food_rating = Column(String(100), nullable = True)
-    service_rating = Column(String(100), nullable = True)
-    pricing_rating = Column(String(100), nullable = True)
-    location_rating = Column(String(100), nullable = True)
-    access_rating = Column(String(100), nullable = True)
+    food = Column(String(100), nullable = True)
+    service = Column(String(100), nullable = True)
+    pricing = Column(String(100), nullable = True)
+    location = Column(String(100), nullable = True)
+    access = Column(String(100), nullable = True)
     restaurants_id = Column(Integer(100), ForeignKey('restaurants.id'))
     restaurants = relationship(Restaurants)
 

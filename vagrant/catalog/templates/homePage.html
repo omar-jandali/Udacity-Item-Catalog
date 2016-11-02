@@ -3,14 +3,28 @@
 
   </head>
   <body>
-    <table>
-      {% for category in categories %}
-      <tr>
-        <td>
-          {{category.name}}
-        </td>
-      </tr>
-      {% endfor %}
-    </table>
+    <div>
+      <table>
+        {% for category in categories %}
+        <tr>
+          <td>
+            {{category.category}}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+      <table>
+        {% for item in items %}
+        <tr>
+          <td>
+            {{item.title}}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+    <div>
+
+    </div>
   </body>
 </html>

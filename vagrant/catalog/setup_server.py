@@ -15,6 +15,15 @@ session = DBSession()
 def TestPage():
   return render_template('testpage.html')
 
+@app.route('/home')
+def HomePage():
+  categories = session.query(Categories).order_by(Categories.id)
+  items = session.query(Items).order_by(Items.id)
+  return render_template('homePage.html', categories = categories, items = items)
+
+"""
+-- uncomment the following  route if you would like to add more categories to the list --
+
 @app.route('/createcategory', methods=['GET', 'POST'])
 def CreateCategory():
     if request.method == 'POST':
@@ -24,10 +33,22 @@ def CreateCategory():
         return redirect(url_for('HomePage'))
     return render_template('createCategory.html')
 
-@app.route('/')
-def HomePage():
+
     categories = session.query(Categories).order_by(Categories.id)
-    return render_template('homePage.html' categories = categories)
+    items = session.query(Items).order_by(Items.id)
+"""
+@app.route('/createitem', methods = ['GET', 'POST'])
+def AddItem():
+    categories = session.query(Categories).order_by(Categories.id)
+    if request.method == 'POST':
+        newItem = Items(title = request.form['title'],
+                        description = reqest.form['description'],
+                        category_id = request.form['category_id'])
+        session.add(newItem)
+        session.commit()
+        return redirect(url_for('HomePage'))
+    return render_template('createItems.html', categories = categories)
+
 
 if __name__ == '__main__':
     app.secret_key = "Secret_Key"

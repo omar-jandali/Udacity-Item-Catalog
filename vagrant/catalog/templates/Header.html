@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <!--The following two scripts are used for the google signup bottons-->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"> </script>
+    <script src="//apis.google.com/js/platform.js?onload=start"> </script>
+
+    <!--The following is the jquery libaray link-->
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+    <!--The following links are for the css and libraries for website design-->
+    <link rel="stylesheet" href="../css/header.css">
+  </head>
+  <body>
+    <body>
+      <div>
+      <h1>Catalog</h1>
+      <a href="{{url_for('Login')}}">login</a>
+      </div>
+      <div>
+        <table>
+          {% for category in categories %}
+          <tr>
+            <td>
+            <a href="{{url_for('ShowItems', category = category.category)}}">{{category.category}}</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+        <table>
+          {% for item in items %}
+          <tr>
+            <td>
+              {{item.title}} ({{item.category_name}})
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </body>
+  </body>
+</html>

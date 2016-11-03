@@ -12,20 +12,28 @@
         {% for category in categories %}
         <tr>
           <td>
-          <a href="{{url_for('ShowItems', category = category.category)}}">{{category.category}}</a>
+            <a href="{{url_for('ShowItems', category = category.category)}}">{{category.category}}</a>
           </td>
         </tr>
         {% endfor %}
       </table>
       <table>
+        <tr>
+          <td>
+            {{category}}
+          </td>
+        </tr>
         {% for item in items %}
         <tr>
           <td>
-            {{item.title}} ({{item.category_name}})
+            <a href="{{url_for('SelectedItem', category = item.category_name, item = item.title)}}">{{item.title}}</a>
           </td>
         </tr>
         {% endfor %}
       </table>
+    </div>
+    <div>
+
     </div>
   </body>
 </html>

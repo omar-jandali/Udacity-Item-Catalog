@@ -5,6 +5,18 @@ from setup_database import Base, Categories, Items
 
 app = Flask(__name__)
 
+from flask import session as login_session
+import random, string
+
+from oauth2client.client import flow_from_clientsecrets
+from oauth2client.client import FlowExchangeError
+import httplib2
+import json
+from flask import make_response
+import requests
+
+CLIENT_ID = json.loads(open('client_secret.json', 'r').read())['web']['client_id']
+
 engine = create_engine('sqlite:///catelogs.db')
 Base.metadata.bind = engine
 
@@ -36,19 +48,88 @@ def CreateCategory():
 
     categories = session.query(Categories).order_by(Categories.id)
     items = session.query(Items).order_by(Items.id)
+
 """
+
 @app.route('/createitem', methods = ['GET', 'POST'])
 def AddItem():
     categories = session.query(Categories).order_by(Categories.id)
     if request.method == 'POST':
         newItem = Items(title = request.form['title'],
-                        description = reqest.form['description'],
-                        category_id = request.form['category_id'])
+                        description = request.form['description'],
+                        category_name = request.form['category_name'])
         session.add(newItem)
         session.commit()
         return redirect(url_for('HomePage'))
     return render_template('createItems.html', categories = categories)
 
+@app.route('/catalog/<string:category>/items')
+def ShowItems(category):
+    categories = session.query(Categories).order_by(Categories.id)
+    items = session.query(Items).filter_by(category_name = category)
+    return render_template('ShowCategoryItems.html', items = items, category = category, categories = categories)
+
+@app.route('/catalog/<string:category>/<string:item>')
+def SelectedItem(category, item):
+    selecteditem = session.query(Items).filter_by(title = item).one()
+    return render_template('ShowSelectedItem.html', item = selecteditem, category = category)
+
+@app.route('/login')
+def Login():
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
+    login_session['state'] = state
+    return render_template('login.html')
+
+@app.route('/gconnect', methods=['POST'])
+def gconnect():
+    if request.args.get('state') != login_session['state']:
+        response = make_response(json.dumps('Invalid state parameret'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+        code = request.data
+        try:
+            oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
+            oauth_flow.redirect_uri = 'postmessage'
+            credentials = oauth_flow.step2_exchange(code)
+        except FlowExchangeError:
+            response = make_response(json.dumps('Failed to upgrade the authorization code'), 401)
+            response.headers['Content-Type'] = 'application/json'
+            return response
+        access_token = credentials.access_token
+        url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s' % access_token)
+        h = httplib2.Http()
+        result = json.loads(h.request(url, 'GET')[1])
+        if result.get('error') is not None:
+            response = make_response(json.dumps(result.get('error')), 501)
+            response.headers['Content-Type'] = 'application/json'
+        gplus_id = credentials.id_token['sub']
+        if result['user_id'] != gplus_id:
+            response = make_response(json.dumps("Token's user ID doesn't match given userID"), 401)
+            response.headers['Content-Type'] = 'application/json'
+            return response
+        if result['issued_to'] != CLIENT_ID:
+            response = make_response(json.dumps("Token's client ID does not match app's"), 401)
+            print "Token's client ID does not match app's"
+            response.headers['Content-Type'] = 'application/json'
+            return response
+        stored_credentials = login_session.get('credentials')
+        stored_gplus_id = login_session.get('gplus_id')
+        if stored_credentials is not None and gplus_id == stored_gplus_id:
+            response = make_response(json.dumps('Current user is already connection'), 200)
+            response.headers['Content-Type'] = 'applicaiton/json'
+        login_session['credentials'] = credentials
+        login_session['gplus_id'] = gplus_id
+
+        userinfo_url = "https://www.googleapis.oauth2/v1/userinfo"
+        params = {'access_token': credentials.access_token, 'alt':'json'}
+        answer = request.get (userinfo_url, params = params)
+        data = json.loads(answer.text)
+
+        login_session['username'] = data["name"]
+        login_session['picture'] = data["picture"]
+        login_session['email'] = data["email"]
+
+        #flash("you are now logged in as %s"%login_session['username'])
 
 if __name__ == '__main__':
     app.secret_key = "Secret_Key"

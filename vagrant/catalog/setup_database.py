@@ -22,6 +22,14 @@ class Items(Base):
   category_name = Column(String(100), ForeignKey('categories.category'))
   category = relationship(Categories)
 
+class Users(Base):
+  __tablename__ = 'users'
+
+  id = Column(Integer, primary_key = True)
+  username = Column(String(100), index = True)
+  email = Column(String(225), nullable = False)
+  profile_pic = Column(String(225), nullable = False)
+
 engine = create_engine('sqlite:///catelogs.db')
 
 Base.metadata.create_all(engine)

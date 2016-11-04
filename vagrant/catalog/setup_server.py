@@ -139,10 +139,8 @@ def gconnect():
         return response
 
     # Store the access token in the session for later use.
-    login_session['credentials'] = credentials
+    login_session['credentials'] = credentials.access_token
     login_session['gplus_id'] = gplus_id
-
-    credentials = AccessTokenCredentials(login_session['credentials'], 'user-agent-value')
 
     # Get user info
     userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
@@ -154,6 +152,15 @@ def gconnect():
     login_session['username'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
+
+    """users = session.query(Users).order_by(username)
+
+    if login_session['username'] != users.username:
+        newUser = Users(username = login_session['username'],
+                        profile_pic = login_session['picture'],
+                        email = login_session['email'])
+        session.add(newUser)
+        session.commit()"""
 
     output = ''
     output += '<h1>Welcome, '

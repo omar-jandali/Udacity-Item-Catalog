@@ -173,6 +173,32 @@ def gconnect():
     print "done!"
     return output
 
+@app.route('/gdisconnect')
+def gdisconnect():
+    credentials = login_session.get('credentials')
+    if credentials is None:
+        response = make_response(json.dumps('Current user not connection'), 401)
+        response.headersp['Content-Type'] = 'application/json'
+        return response
+    #access_token = credentials.access_token
+    url = url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % credentials
+    h = httplib2.Http()
+    result = h.request(url, 'GET')[0]
+
+    if result['status'] == '200':
+        del login_session['credentials']
+        del login_session['gplus_id']
+        del login_session['username']
+        del login_session['email']
+        del login_session['picture']
+
+        response = make_response(json.dumps('Successfully disconnected'), 200)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        response = make_response(json.dumps('Failed to revoke token for given user'), 400)
+        response.headers['Content-Type'] = 'application/json'
+        return response
 
 if __name__ == '__main__':
     app.secret_key = "Secret_Key"

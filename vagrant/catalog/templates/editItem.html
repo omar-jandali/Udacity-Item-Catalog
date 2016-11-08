@@ -21,16 +21,20 @@
     </table>
   </div>
   <div class="col-md-10 white fullheight">
-    <h1>
-      {{item.title}}
-    </h1>
-    <div>
-      {{item.description}}
-    </div>
-    <div>
-      <a href="{{url_for('EditItem', item_category = item.category_name, item_title = item.title)}}">Edit</a> |
-      <a href="{{url_for('DeleteItem', item_category = item.category_name, item_title = item.title)}}">Delete</a>
-    </div>
+    <h1>Edit {{editedItem.title}}</h1>
+    <form action="{{url_for('EditItem', item_category = item_category, item_title = editedItem.title)}}" method="POST">
+      Item Title:
+      <input type="text" name="title" value="{{editedItem.title}}"><br>
+      Item Description:
+      <input type="text" name="description" value="{{editedItem.description}}"><br>
+      Item Category:
+      <select name="category_name">
+        {% for category in categories %}
+        <option value="{{category.category}}">{{category.category}}</option>
+        {% endfor %}
+      </select><br>
+      <input type="submit" name="Submit">
+    </form>
   </div>
 </div>
 {% endblock %}

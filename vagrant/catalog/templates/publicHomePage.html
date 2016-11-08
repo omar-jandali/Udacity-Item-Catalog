@@ -21,22 +21,21 @@
       </table>
     </div>
     <div class="col-md-10 white fullheight">
-      <table>
+      <table class="">
         <tr>
           <td>
-            <h1>
-              {{category}}
-            </h1>
+            <h1>Recent Items</h1>
           </td>
         </tr>
         {% for item in items %}
         <tr>
           <td>
-            <a href="{{url_for('SelectedItem', category = item.category_name, item = item.title)}}">{{item.title}}</a>
+            {{item.title}} ({{item.category_name}})
           </td>
         </tr>
         {% endfor %}
       </table>
     </div>
   </div>
+
 {% endblock %}

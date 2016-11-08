@@ -4,7 +4,7 @@
   <div class="row">
     <div class="col-md-2 white center fullheight border-right">
       <h1>Catalog</h1>
-      <a href="{{url_for('Login')}}">login</a>
+      <a href="{{url_for('gdisconnect')}}">logout</a>
       <table class="center fullwidth category-margin">
         <tr>
           <td>
@@ -21,22 +21,15 @@
       </table>
     </div>
     <div class="col-md-10 white fullheight">
-      <table>
-        <tr>
-          <td>
-            <h1>
-              {{category}}
-            </h1>
-          </td>
-        </tr>
-        {% for item in items %}
-        <tr>
-          <td>
-            <a href="{{url_for('SelectedItem', category = item.category_name, item = item.title)}}">{{item.title}}</a>
-          </td>
-        </tr>
-        {% endfor %}
-      </table>
+      <h1>
+        Delete {{deleteItem.title}}
+      </h1>
+      <p>
+        Are you sure you want to delete this item ?
+      </p>
+      <form action="{{url_for('DeleteItem', item_category = item_category, item_title = deleteItem.title)}}" method="POST">
+        <input type="submit" name="Delete">
+      </form>
     </div>
   </div>
 {% endblock %}

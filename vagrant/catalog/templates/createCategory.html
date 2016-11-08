@@ -1,11 +1,8 @@
-<html>
-  <head>
+{% extends 'Header.html' %}
 
-  </head>
-  <body>
-    <form action="{{url_for('CreateCategory')}}" method="POST">
-      Category Name: <input type="text" name="name"><br>
-      <input type="submit" name="Submit">
-    </form>
-  </body>
-</html>
+{% block content %}
+  <form action="{{url_for('CreateCategory')}}" method="POST">
+    Category Name: <input type="text" name="name"><br>
+    <input type="submit" name="Submit">
+  </form>
+{% endblock %}

@@ -21,22 +21,10 @@
       </table>
     </div>
     <div class="col-md-10 white fullheight">
-      <table>
-        <tr>
-          <td>
-            <h1>
-              {{category}}
-            </h1>
-          </td>
-        </tr>
-        {% for item in items %}
-        <tr>
-          <td>
-            <a href="{{url_for('SelectedItem', category = item.category_name, item = item.title)}}">{{item.title}}</a>
-          </td>
-        </tr>
-        {% endfor %}
-      </table>
+      <h1>
+        {{item.title}}
+      </h1>
+      {{item.description}}
     </div>
   </div>
 {% endblock %}

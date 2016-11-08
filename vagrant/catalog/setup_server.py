@@ -1,3 +1,18 @@
+"""
+This is a big project that was completely written by Omar Jandali.
+
+This file is a large one that can be overwhelming:
+There are comments throughtout the document that will help clarify what each part of code does
+
+All of the following code is written in PYTHON
+
+for instructions on loading this document please look at the README.md file
+"""
+
+"""
+The following are all of the different files and libraries that were imported and
+implimented into this web project
+"""
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -16,6 +31,10 @@ import json
 from flask import make_response
 import requests
 
+"""
+The following are the database conections and google conneciton for the google plus login
+"""
+
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
 
 engine = create_engine('sqlite:///catelogs.db')
@@ -24,10 +43,10 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-@app.route('/testpage')
-def TestPage():
-  return render_template('testpage.html')
-
+"""
+This is the home route: displays the homepage (categories and recently added items)
+"""
+@app.route('/')
 @app.route('/home')
 def HomePage():
     categories = session.query(Categories).order_by(Categories.id)
@@ -36,21 +55,27 @@ def HomePage():
         return render_template('publicHomePage.html', categories = categories, items = items)
     return render_template('homePage.html', categories = categories, items = items)
 
+"""
+This is the new item route: this is where new items are created once you log in
+"""
 @app.route('/createitem', methods = ['GET', 'POST'])
 def AddItem():
-    #if 'username' not in login_session:
-    #    return redirect('/login')
+    if 'username' not in login_session:
+        return redirect('/login')
     categories = session.query(Categories).order_by(Categories.id)
     if request.method == 'POST':
         newItem = Items(title = request.form['title'],
                         description = request.form['description'],
                         category_name = request.form['category_name'],
-                        users_id = 1)
+                        users_id = login_session['email'])
         session.add(newItem)
         session.commit()
         return redirect(url_for('HomePage'))
     return render_template('createItems.html', categories = categories)
 
+"""
+This is the edit item route: this is where the user that create the item can make edits to
+"""
 @app.route('/<string:item_category>/<string:item_title>/edit', methods=['GET', 'POST'])
 def EditItem(item_category, item_title):
     if 'username' not in login_session:
@@ -69,6 +94,9 @@ def EditItem(item_category, item_title):
         return redirect(url_for('HomePage'))
     return render_template('editItem.html', item_category = item_category, categories = categories, editedItem = editedItem)
 
+"""
+This is the delete item route: this is where the user that create the item and delete the item
+"""
 @app.route('/<string:item_category>/<string:item_title>/delete', methods=['GET', 'POST'])
 def DeleteItem(item_category, item_title):
     categories = session.query(Categories).order_by(Categories.id)
@@ -81,20 +109,31 @@ def DeleteItem(item_category, item_title):
         return redirect(url_for('HomePage'))
     return render_template('deleteItem.html', item_category = item_category, deleteItem = deleteItem, categories = categories)
 
+"""
+This is the show items route: this will show all the items in a selected categories
+"""
 @app.route('/catalog/<string:category>/items')
 def ShowItems(category):
     categories = session.query(Categories).order_by(Categories.id)
     items = session.query(Items).filter_by(category_name = category)
     return render_template('ShowCategoryItems.html', items = items, category = category, categories = categories)
 
+"""
+THis is the selected items route: this route will show the details about a specific items that the user selected
+"""
 @app.route('/catalog/<string:category>/<string:item>')
 def SelectedItem(category, item):
     categories = session.query(Categories).order_by(Categories.id)
     selecteditem = session.query(Items).filter_by(title = item).one()
     if 'username' not in login_session:
         return render_template('publicShowSelectedItem.html', item = selecteditem, category = category,  categories = categories)
+    if login_session['email'] != selecteditem.users_id:
+        return render_template('publicShowSelectedItem.html', item = selecteditem, category = category,  categories = categories)
     return render_template('ShowSelectedItem.html', item = selecteditem, category = category, categories = categories)
 
+"""
+This is the login route: This route is where the user can login to the Google + login (only current option)
+"""
 @app.route('/login')
 def Login():
     categories = session.query(Categories).order_by(Categories.id)
@@ -102,6 +141,9 @@ def Login():
     login_session['state'] = state
     return render_template('login.html', STATE = state, categories = categories)
 
+"""
+This is the google connect route: this route is how the user logs into the google plus account
+"""
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     # Validate state token
@@ -174,15 +216,6 @@ def gconnect():
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
-    """users = session.query(Users).order_by(username)
-
-    if login_session['username'] != users.username:
-        newUser = Users(username = login_session['username'],
-                        profile_pic = login_session['picture'],
-                        email = login_session['email'])
-        session.add(newUser)
-        session.commit()"""
-
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
@@ -194,6 +227,9 @@ def gconnect():
     print "done!"
     return output
 
+"""
+This is the google disconnect route: this is where you will disconnect or logout from your google plus accoutn
+"""
 @app.route('/gdisconnect')
 def gdisconnect():
     credentials = login_session.get('credentials')
@@ -242,6 +278,22 @@ def getUserId(email):
     except:
         return None
 
+
+"""
+The following two routes are to get the jsonified records for categories and items
+"""
+@app.route('/catalog/<string:categories_name>/items/JSON')
+def categoryItemsJSON(categories_name):
+    categories = session.query(Categories).filter_by(category = categories_name).one()
+    items = session.query(Items).filter_by(category_name = categories_name).all()
+    return jsonify(CategoryItems = [i.serialize for i in items])
+
+@app.route('/catalog/<string:categories_name>/<string:item>/JSON')
+def signleItemJSON(categories_name, item):
+    categories = session.query(Categories).filter_by(category = categories_name).one()
+    item = session.query(Items).filter_by(title = item).one()
+    return jsonify(SingleItem = item.serialize)
+
 """
 -- uncomment the following  route if you would like to add more categories to the list --
 
@@ -249,17 +301,12 @@ def getUserId(email):
 def CreateCategory():
     if request.method == 'POST':
         newCategory = Categories(category = request.form['name'],
-                                 users_id = 1)
+        users_id = 1)
         session.add(newCategory)
         session.commit()
         return redirect(url_for('HomePage'))
-    return render_template('createCategory.html')
+        return render_template('createCategory.html')
 """
-@app.route('/catalog/<string:categories_name>/items/JSON')
-def categoryItemsJSON(categories_name):
-    categories = session.query(Categories).filter_by(category = categories_name).one()
-    items = session.query(Items).filter_by(category_name = categories_name).all()
-    return jsonify(CategoryItems = [i.serialize for i in items])
 
 if __name__ == '__main__':
     app.secret_key = "Secret_Key"

@@ -1,8 +1,0 @@
-{% extends 'Header.html' %}
-
-{% block content %}
-  <form action="{{url_for('CreateCategory')}}" method="POST">
-    Category Name: <input type="text" name="name"><br>
-    <input type="submit" name="Submit">
-  </form>
-{% endblock %}
